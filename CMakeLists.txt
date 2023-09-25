@@ -7,4 +7,5 @@ include_directories(.)
 
 add_executable(c_but_better
         Test.cpp
-        Test.h)
+        Test.h
+        ClackJack_Plus_Plus.cpp)
