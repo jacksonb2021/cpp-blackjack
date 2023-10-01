@@ -167,6 +167,9 @@ int main() {
     print_deck(deck->root);
     cout << "\ncurrent sum = " << comp.getSum() << endl;
 
+    //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
+    //Pending JJ: Improve printing, creating console game after everything is done, more?
+
     return 0;
 
 }
