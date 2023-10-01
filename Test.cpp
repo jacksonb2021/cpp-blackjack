@@ -1,5 +1,5 @@
 //
-// Created by Jackson Burns, Jose Juan Velasquez on 9/13/2023.
+// Created by Jackson Burns and Jose Juan Velasquez on 9/30/2023.
 //
 
 #include "Blackjack.h"
