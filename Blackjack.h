@@ -16,10 +16,15 @@ typedef struct cards {
 //The structure in charge of the root node of a tree.
 typedef struct card_deck{
     cards* root; //Will be the pointer pointing to the root node of a tree.
+    int size;
 }card_deck;
 
 
-card_deck* Create_deck_list();
+/**
+ * This function allocates memory for the card deck
+ * @return
+ */
+card_deck* allocateDeck();
 
 cards* cards_node_create(int face, char suit);
 
