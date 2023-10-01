@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <cstdlib>
+#include <string>
 using namespace std;
 
 //Open Structure
@@ -20,6 +21,20 @@ cards* cards_node_create(int face, char suit){
     node->face = face;
     node->next = nullptr;
     return node;
+}
+
+void clearCard(cards* card){
+    if(card== nullptr){
+        return;
+    }
+    clearCard(card->next);
+    free(card);
+
+}
+void clearDeck(card_deck* deck){
+    clearCard(deck->root);
+    free(deck);
+
 }
 
 void cards_add(cards* node, int face, char suit){
@@ -45,6 +60,8 @@ void print_deck(cards* node){
     if(node->next != nullptr){
         cout << node->face << node->suit << " ";
         print_deck(node->next);
+    }else{
+        cout<<endl;
     }
 }
 
@@ -72,30 +89,56 @@ class Player{
     card_deck* playerDeck;
     card_deck* theCards;
     int sum;
+    int money;
 
     public:
         explicit Player(card_deck* obj){
             this->playerDeck = allocateDeck();
             this->theCards = obj;
             this->sum = 0;
+            this->money = 100;
         }
 
         //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
         void dealCards() {
-            cards* temp = theCards->root;
 
             for(int i = 0; i < 2; i++) {
                 int offset = random(theCards->size);
-                for(int j=0;j<offset-1;j++){
-                    temp = temp->next;
+                cards* card = theCards->root;
+                if(offset!=0){
+                    for(int j=0;j<offset;j++){
+                        card = card->next;
+                    }
                 }
-                cards* card = temp->next;
-                this->sum+=card->face;
-                LL_add_cards(this->playerDeck, card->face, card->suit);
-                temp->next = card->next;
-                theCards->size--;
-                free(card);
-                //temp = temp->next;
+
+                this->sum+=card->next->face;
+                LL_add_cards(this->playerDeck, card->next->face, card->next->suit);
+                card->next=card->next->next;
+
+
+//                cards* temp = theCards->root;
+//                int offset = random(theCards->size);
+//                cards*card = nullptr;
+//                //root card
+//                if(offset==0){
+//                    card = temp->next;
+//                    theCards->root = card;
+//                    free(temp);
+//
+//                }
+//                else{
+//                    for(int j=0;j<offset-1;j++){
+//                        temp = temp->next;
+//                    }
+//                    card = temp->next;
+//                }
+//
+//                this->sum+=card->face;
+//                LL_add_cards(this->playerDeck, card->face, card->suit);
+//                temp->next = card->next;
+//                theCards->size--;
+//                free(card);
+//                //temp = temp->next;
             }
 //            temp = theCards;
 //            this->theCards = this->theCards->next;
@@ -158,6 +201,26 @@ class Player{
         int getSum(){
             return this->sum;
         }
+
+        int getMoney(){
+            return this->money;
+        }
+
+        //bets money. if there is enough money, the bet will be returned.
+        // if not enough money, it will return -1
+        int bet(int val){
+            if(this->money<val){
+                return -1;
+            }
+            else{
+                this->money-=val;
+                return val;
+            }
+        }
+
+        void addMoney(int val){
+            this->money+=val;
+        }
 };
 
 
@@ -171,21 +234,59 @@ int main() {
     print_deck(deck->root);
     cout<<deck->size;
 
-    cout << "\n\ngiving cards to user...\n";
     Player user(deck);
-    user.dealCards();
-    user.printCards();
-    deck->root = user.getCards();
-    print_deck(deck->root);
-    cout << "\ncurrent sum = " << user.getSum() << endl;
-
-    cout <<"\ngiving cards to computer...\n";
     Player comp(deck);
-    comp.dealCards();
-    comp.printCards();
-    deck->root = comp.getCards();
-    print_deck(deck->root);
-    cout << "\ncurrent sum = " << comp.getSum() << endl;
+    //main program loop
+    while(true){
+        string str;
+        cout<<"welcome to blackjack. Press p to play, or e to exit"<<endl;
+        cout<<"you have "<<user.getMoney()<<" coins"<<endl;
+        cin>>str;
+        if(str=="e"||str=="E"){
+            break;
+        }
+        //TODO betting
+
+
+        cout << "\n\ngiving cards to user...\n";
+        user.dealCards(); //give 2 cards
+        user.printCards();
+        clearCard(deck->root); //clear previous cards
+        deck->root = user.getCards(); // update main deck from player deck
+        deck->size-=2; //decrease size by 2 for main deal
+        print_deck(deck->root);
+        cout << "\ncurrent sum = " << user.getSum() << endl;
+
+
+        cout <<"\ngiving cards to computer...\n";
+        comp.dealCards(); //give 2 cards
+        comp.printCards();
+        clearCard(deck->root); //clear previous deck
+        deck->root = comp.getCards(); // set deck from player deck
+        print_deck(deck->root);
+        cout << "\ncurrent sum = " << comp.getSum() << endl;
+
+
+        cout<<"hit(h/H) or stay(s/S)"<<endl;
+        cin>>str;
+        while(str!="h"||str!="H"||str!="s"||str!="S"){
+            cout<<"invalid input, try again"<<endl;
+            cin>>str;
+        }
+        if(str=="h"||str=="H"){
+
+        }
+        else (str=="s"||str=="S"){
+
+        }
+
+    }
+
+//    for(int i=0;i<30;i++){
+//        cout<<random(10)<<" ";
+//    }
+
+
 
     cout <<"\ngiving user one card...\n";
     user.setCards(deck);
