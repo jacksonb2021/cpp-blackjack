@@ -131,6 +131,7 @@ class Player{
     card_deck* theCards;
     int sum;
     int money;
+    bool firstDeal;
 
     public:
         explicit Player(card_deck* obj){
@@ -138,6 +139,7 @@ class Player{
             this->theCards = obj;
             this->sum = 0;
             this->money = 100;
+            this->firstDeal = true;
         }
 
         //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
@@ -148,7 +150,17 @@ class Player{
                 LL_add_cards(this->playerDeck, temp->face, temp->suit);
                 temp = temp->next;
             }
+            if(this->sum > 21 && this->firstDeal){
+                this->playerDeck->root = this->playerDeck->root->next->next;
+                temp = theCards->root;
+                for(int i = 0; i < 2; i++) {
+                    this->sum+=temp->face;
+                    LL_add_cards(this->playerDeck, temp->face, temp->suit);
+                    temp = temp->next;
+                }
+            }
             this->theCards->root = this->theCards->root->next->next;
+            this->firstDeal=false;
         }
 
         void addOneCard(){
@@ -220,23 +232,22 @@ class Player{
 int main() {
     srand(time(nullptr));
 
-    cout << "creating deck\n";
+//    cout << "creating deck\n";
     card_deck *deck = allocateDeck();
     createDeck(deck);
     shuffleDeck(deck->root);
-    print_deck(deck->root);
-    cout<<deck->size;
+//    print_deck(deck->root);
+//    cout<<deck->size;
 
     Player user(deck);
     Player comp(deck);
     string str;
-    cout<<"welcome to blackjack"<<endl;
+    cout<<"********** Welcome to Blackjack! **********"<<endl;
     string bet;
     //main program loop
     bool firstRun = true;
     while(true){
         if(!firstRun){
-            print_deck(deck->root);
             clearDeck(deck);
             deck = allocateDeck();
             createDeck(deck);
@@ -244,26 +255,26 @@ int main() {
             user.resetPlayer(deck);
             comp.resetPlayer(deck);
         }
-        cout<<"you have "<<user.getMoney()<<" coins"<<endl;
-        cout<<"enter number to bet"<<endl;
+        cout<<"***** You have "<<user.getMoney()<<" coins. *****"<<endl;
+        cout<<"***** Enter number to bet. *****"<<endl;
         cin>>bet;
         while(user.bet(stoi(bet))==-1){
-            cout<<"you only have "<<user.getMoney()<<" coins to bet, try again"<<endl;
+            cout<<"***** You only have "<<user.getMoney()<<" coins to bet, try again. *****"<<endl;
             cin>>bet;
         }
-        cout<<"you have bet " <<bet<< " coins";
+        cout<<"** You have bet " <<bet<< " coins. **";
 
-        cout << "\n\ngiving cards to user...\n";
+        cout << "\n\n* giving cards to user... *\n";
         user.dealCards(); //give 2 cards
         user.printCards();
 
-        cout << "\n user current sum = " << user.getSum() << endl;
+        cout << "\nuser current sum = " << user.getSum() << endl;
 
-        cout <<"\ngiving cards to computer...\n";
+        cout <<"\n* giving cards to computer... *\n";
         comp.dealCards(); //give 2 cards
-        comp.printCards();
+//        comp.printCards();
 
-        cout << "\n computer current sum = " << comp.getSum() << endl;
+//        cout << "\ncomputer current sum = " << comp.getSum() << endl;
 
         while(true){
             cout<<"hit(h/H) or stay(s/S)"<<endl;
@@ -273,19 +284,20 @@ int main() {
                 cin>>str;
             }
             if(str=="h"||str=="H"){
-                cout <<"\ngiving user one card...\n";
+                cout <<"\n* giving user one card... *\n";
                 user.addOneCard();
                 user.printCards();
-                cout << "current sum = " << user.getSum() << endl;
+                cout << "user current sum = " << user.getSum() << endl;
                 if(user.getSum()>21){
-                    cout<<"overdrew, you lose "<<bet<<" coins"<<endl;
+                    cout<<"*** overdrew, you lose "<<bet<<" coins ***"<<endl;
                     break;
                 }else if (user.getSum()==21){ //exactly 21
-                    cout<<"you win "<<bet<< " coins!"<<endl;
+                    cout << "Computer's hand:\n";
+                    comp.printCards();
+                    cout<<"*** You win "<<bet<< " coins! ***"<<endl;
                     user.addMoney(2*(stoi(bet)));
                     firstRun=false;
                     break;
-
                 }
                 else{
                     continue;
@@ -293,36 +305,40 @@ int main() {
             }
             else { //stay
                 while(comp.getSum()<17){
-                    cout<<"computer is drawing"<<endl;
-                    //comp.setCards(deck);
+                    cout<<"* computer is drawing *"<<endl;
                     comp.addOneCard();
-                    comp.printCards();
-
+//                    comp.printCards();
                 }
                 //win condition
 
                 if(comp.getSum()>21||comp.getSum()<user.getSum()){
-                    cout<<"YOU WIN "<<bet<<" COINS"<<endl;
+                    cout << "Computer's hand:\n";
+                    comp.printCards();
+                    cout << "computer's final sum = " << comp.getSum() << endl;
+                    cout<<"*** YOU WIN "<<bet<<" COINS ***"<<endl;
                     user.addMoney(2*stoi(bet));
                 }
                 else if (comp.getSum()==user.getSum()){
-                    cout<<"TIE. returning your money"<<endl;
+                    cout << "Computer's hand:\n";
+                    comp.printCards();
+                    cout << "computer's final sum = " << comp.getSum() << endl;
+                    cout<<"*** TIE. returning your money ***"<<endl;
                     user.addMoney(stoi(bet));
                 }
                 else{
-                    cout<<"YOU LOST "<<bet<<" COINS"<<endl;
-
+                    cout << "Computer's hand:\n";
+                    comp.printCards();
+                    cout << "computer's final sum = " << comp.getSum() << endl;
+                    cout<<"*** YOU LOST "<<bet<<" COINS ***"<<endl;
                 }
                 break;
             }
 
         }
-
         cout<<"play again? (y/n)"<<endl;
         cin>>str;
         if(str=="n"||str=="N"){
-            cout<<"You have "<<user.getMoney()<<" coins"<<endl;
-            print_deck(deck->root);
+            cout<<"***** Goodbye. *****"<<endl;
             clearDeck(deck);
             return 0;
         }
@@ -330,18 +346,7 @@ int main() {
             firstRun=false;
             continue;
         }
-
-
     }
-
-//    for(int i=0;i<30;i++){
-//        cout<<random(10)<<" ";
-//    }
-
-
-
-
-
     //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
     //Pending JJ: Improve printing, creating console game after everything is done, more?
 
