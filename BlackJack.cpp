@@ -24,20 +24,13 @@ cards* cards_node_create(int face, char suit){
 }
 
 void clearCard(cards* card){
-
-    //Declare variables used within the function
-    cards* temp = card;
-
-    //Open while loop that loops until it reached the end of the list
-    while (card != nullptr) {
-        temp = card;
-        //Make the current head point to the next card
-        card = card->next;
-        //De-allocate the previous card
-        delete temp;
-        //Point to the next card to repeat cycle
-
-    }
+        if(card== nullptr){
+            free(card);
+            return;
+        } else{
+            clearCard(card->next);
+        }
+        free(card);
 }
 
 void clearDeck(card_deck* deck){
@@ -163,11 +156,9 @@ class Player{
             this->sum+=temp->face;
             LL_add_cards(this->playerDeck, temp->face, temp->suit);
             this->theCards->root = this->theCards->root->next;
-            //free(temp);
         }
 
         void printCards(){
-            //cout<<endl;
             cards* temp = this->playerDeck->root;
             while(temp != nullptr) {
                 if (temp->face == 13) {
@@ -193,14 +184,6 @@ class Player{
             }
             cout<<endl;
         }
-//        card_deck* getDeck(){
-//            return this->theCards;
-//        }
-//
-//        void setCards(card_deck * obj){
-//            clearDeck(theCards);
-//            this->theCards = obj;
-//        }
 
         int getSum(){
             return this->sum;
