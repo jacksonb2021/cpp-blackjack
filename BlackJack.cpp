@@ -6,7 +6,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <cstdlib>
 #include <string>
 using namespace std;
 
@@ -76,14 +75,10 @@ void createDeck(card_deck* deck){
     }
 }
 void SwapCards(cards *cardOne, cards *cardTwo) {
-    //Declare variables used within the function
     cards temp;
-
-    //Make the temp variable equal the random card created in the Shuffle function
     temp.suit = cardOne->suit;
     temp.face = cardOne->face;
 
-    //Swap card1 and card2 using the temp variable
     cardOne->suit = cardTwo->suit;
     cardOne->face = cardTwo->face;
     cardTwo->suit = temp.suit;
@@ -91,39 +86,25 @@ void SwapCards(cards *cardOne, cards *cardTwo) {
 }
 
 void shuffleDeck(cards *deck) {
-    //Declare variables used within the function
     cards* card1, * card2;
-    int i;
-    srand((unsigned int) time(nullptr));
+    srand( time(nullptr));
 
-    //Open for loop in order to iterate the number of cards present, which is 52
-    for (i = 0; i < 52; i++)
-    {
-        //Declare a variable that conatins the random number generator
+    for (int i = 0; i < 52; i++){
         int randCard1 = rand() % 52;
-        //Make one of the declared structure variables equal the head of the node
         card1 = deck;
 
-        //Open for loop that iterates the random number generated that is stored within the variable
         for (int j = 0; j < randCard1; j++) {
-            //Make the card1 variable equal the next card number until it iterates the number that was randomly generated
             card1 = card1->next;
         }
-        //Declare a variable that conatins the random number generator
+
         int randCard2 = rand() % 52;
-        //Make one of the declared structure variables equal the head of the node
         card2 = deck;
 
-        //Open for loop that iterates the random number generated that is stored within the variable
         for (int k = 0; k < randCard2; k++) {
-            //Make the card2 variable equal the next card number until it iterates the number that was randomly generated
             card2 = card2->next;
         }
-        //Now that we have two random cards, we call the SwapCards function to swap their locations
         SwapCards(card1, card2);
-
     }
-
 }
 
 class Player{
@@ -146,7 +127,11 @@ class Player{
         void dealCards() {
             cards* temp = theCards->root;
             for(int i = 0; i < 2; i++) {
-                this->sum+=temp->face;
+                if(temp->face > 10){
+                    this->sum+=10;
+                } else{
+                    this->sum+=temp->face;
+                }
                 LL_add_cards(this->playerDeck, temp->face, temp->suit);
                 temp = temp->next;
             }
@@ -197,11 +182,11 @@ class Player{
             cout<<endl;
         }
 
-        int getSum(){
+        int getSum() {
             return this->sum;
         }
 
-        int getMoney(){
+        int getMoney() {
             return this->money;
         }
 
@@ -231,13 +216,9 @@ class Player{
 
 int main() {
     srand(time(nullptr));
-
-//    cout << "creating deck\n";
     card_deck *deck = allocateDeck();
     createDeck(deck);
     shuffleDeck(deck->root);
-//    print_deck(deck->root);
-//    cout<<deck->size;
 
     Player user(deck);
     Player comp(deck);
@@ -272,9 +253,6 @@ int main() {
 
         cout <<"\n* giving cards to computer... *\n";
         comp.dealCards(); //give 2 cards
-//        comp.printCards();
-
-//        cout << "\ncomputer current sum = " << comp.getSum() << endl;
 
         while(true){
             cout<<"hit(h/H) or stay(s/S)"<<endl;
@@ -294,9 +272,10 @@ int main() {
                 }else if (user.getSum()==21){ //exactly 21
                     cout << "Computer's hand:\n";
                     comp.printCards();
+                    cout << "computer's final sum = " << comp.getSum() << endl;
                     cout<<"*** You win "<<bet<< " coins! ***"<<endl;
                     user.addMoney(2*(stoi(bet)));
-                    firstRun=false;
+                    //firstRun=false;
                     break;
                 }
                 else{
@@ -307,7 +286,6 @@ int main() {
                 while(comp.getSum()<17){
                     cout<<"* computer is drawing *"<<endl;
                     comp.addOneCard();
-//                    comp.printCards();
                 }
                 //win condition
 
@@ -349,8 +327,6 @@ int main() {
     }
     //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
     //Pending JJ: Improve printing, creating console game after everything is done, more?
-
-    return 0;
 
 }
 
