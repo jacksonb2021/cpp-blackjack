@@ -199,10 +199,11 @@ class Player{
             this->money+=val;
         }
 
-        void resetPlayer(){
+        void resetPlayer(card_deck * deck){
             clearDeck(playerDeck);
             playerDeck = allocateDeck();
             this->sum = 0;
+            this->theCards = deck;
         }
 };
 
@@ -229,8 +230,8 @@ int main() {
             clearDeck(deck);
             deck = allocateDeck();
             createDeck(deck);
-            user.resetPlayer();
-            comp.resetPlayer();
+            user.resetPlayer(deck);
+            comp.resetPlayer(deck);
 
 
         }
@@ -241,14 +242,14 @@ int main() {
             cout<<"you only have "<<user.getMoney()<<" coins to bet, try again"<<endl;
             cin>>bet;
         }
-        cout<<"you have bet "<<bet<<"coins";
+        cout<<"you have bet " <<bet<< " coins";
 
         cout << "\n\ngiving cards to user...\n";
         user.dealCards(); //give 2 cards
         user.printCards();
 
-        print_deck(deck->root);
-        cout<<"size "<<deck->size<<endl;
+        //print_deck(deck->root);
+        //cout<<"size "<<deck->size<<endl;
         cout << "\n user current sum = " << user.getSum() << endl;
 
 
@@ -258,8 +259,8 @@ int main() {
         comp.printCards();
         //clearCard(deck->root); //clear previous deck
         //deck = comp.getDeck(); // set deck from player deck
-        print_deck(deck->root);
-        cout<<"size "<<deck->size<<endl;
+        //print_deck(deck->root);
+        //cout<<"size "<<deck->size<<endl;
 
         cout << "\n computer current sum = " << comp.getSum() << endl;
 
@@ -276,13 +277,13 @@ int main() {
                 user.addOneCard();
                 user.printCards();
                 //deck = user.getDeck();
-                print_deck(deck->root);
-                cout << "\ncurrent sum = " << user.getSum() << endl;
+                //print_deck(deck->root);
+                cout << "current sum = " << user.getSum() << endl;
                 if(user.getSum()>21){
-                    cout<<"overdrew, you lose "<<bet<<" coins";
+                    cout<<"overdrew, you lose "<<bet<<" coins"<<endl;
                     break;
                 }else if (user.getSum()==21){ //exactly 21
-                    cout<<"you win "<<bet<< " coins!";
+                    cout<<"you win "<<bet<< " coins!"<<endl;
                     user.addMoney(2*(stoi(bet)));
                     firstRun=false;
                     break;
@@ -302,7 +303,7 @@ int main() {
                 }
                 //win condition
 
-                if(comp.getSum()<user.getSum()){
+                if(comp.getSum()>21||comp.getSum()<user.getSum()){
                     cout<<"YOU WIN "<<bet<<" COINS"<<endl;
                     user.addMoney(2*stoi(bet));
                 }
