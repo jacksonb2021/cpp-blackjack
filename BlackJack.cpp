@@ -16,7 +16,7 @@ card_deck* allocateDeck(){
     return list;
 }
 cards* cards_node_create(int face, char suit){
-    auto* node = (cards*)malloc(sizeof(cards)*1);
+    auto* node = (cards*)calloc(1,sizeof(cards));
     node->suit = suit;
     node->face = face;
     node->next = nullptr;
@@ -24,17 +24,27 @@ cards* cards_node_create(int face, char suit){
 }
 
 void clearCard(cards* card){
-    if(card== nullptr){
-        return;
+
+    //Declare variables used within the function
+    cards* temp = card;
+
+    //Open while loop that loops until it reached the end of the list
+    while (card != nullptr) {
+        temp = card;
+        //Make the current head point to the next card
+        card = card->next;
+        //De-allocate the previous card
+        delete temp;
+        //Point to the next card to repeat cycle
+
     }
-    clearCard(card->next);
-    free(card);
-
 }
-void clearDeck(card_deck* deck){
-    clearCard(deck->root);
-    free(deck);
 
+void clearDeck(card_deck* deck){
+    if(deck->root != nullptr){
+        clearCard(deck->root);
+    }
+    delete deck;
 }
 
 void cards_add(cards* node, int face, char suit){
@@ -72,19 +82,55 @@ void createDeck(card_deck* deck){
         }
     }
 }
+void SwapCards(cards *cardOne, cards *cardTwo) {
+    //Declare variables used within the function
+    cards temp;
 
+    //Make the temp variable equal the random card created in the Shuffle function
+    temp.suit = cardOne->suit;
+    temp.face = cardOne->face;
 
-
-int random(int max){
-    return rand()%max;
+    //Swap card1 and card2 using the temp variable
+    cardOne->suit = cardTwo->suit;
+    cardOne->face = cardTwo->face;
+    cardTwo->suit = temp.suit;
+    cardTwo->face = temp.face;
 }
 
-cards* seekRandom(cards* node, int random){
-    if(random == 0){
-        return node;
-    } else {
-        return seekRandom(node->next, random-1);
+void shuffleDeck(cards *deck) {
+    //Declare variables used within the function
+    cards* card1, * card2;
+    int i;
+    srand((unsigned int) time(nullptr));
+
+    //Open for loop in order to iterate the number of cards present, which is 52
+    for (i = 0; i < 52; i++)
+    {
+        //Declare a variable that conatins the random number generator
+        int randCard1 = rand() % 52;
+        //Make one of the declared structure variables equal the head of the node
+        card1 = deck;
+
+        //Open for loop that iterates the random number generated that is stored within the variable
+        for (int j = 0; j < randCard1; j++) {
+            //Make the card1 variable equal the next card number until it iterates the number that was randomly generated
+            card1 = card1->next;
+        }
+        //Declare a variable that conatins the random number generator
+        int randCard2 = rand() % 52;
+        //Make one of the declared structure variables equal the head of the node
+        card2 = deck;
+
+        //Open for loop that iterates the random number generated that is stored within the variable
+        for (int k = 0; k < randCard2; k++) {
+            //Make the card2 variable equal the next card number until it iterates the number that was randomly generated
+            card2 = card2->next;
+        }
+        //Now that we have two random cards, we call the SwapCards function to swap their locations
+        SwapCards(card1, card2);
+
     }
+
 }
 
 class Player{
@@ -103,40 +149,21 @@ class Player{
 
         //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
         void dealCards() {
-
+            cards* temp = theCards->root;
             for(int i = 0; i < 2; i++) {
-                int offset = random(theCards->size-1);
-                cards* card = theCards->root;
-                if(offset!=0){
-                    for(int j=0;j<offset;j++){
-                        card = card->next;
-                    }
-                }
-
-                this->sum+=card->next->face;
-                LL_add_cards(this->playerDeck, card->next->face, card->next->suit);
-                card->next=card->next->next;
-                theCards->size--;
-
-
+                this->sum+=temp->face;
+                LL_add_cards(this->playerDeck, temp->face, temp->suit);
+                temp = temp->next;
             }
-
+            this->theCards->root = this->theCards->root->next->next;
         }
 
         void addOneCard(){
             cards *temp = this->theCards->root;
-            int offset = random(theCards->size);
-            for(int j=0;j<offset-1;j++){
-                temp = temp->next;
-            }
-            cards* card = temp->next;
-            this->sum+=card->face;
-            LL_add_cards(this->playerDeck, card->face, card->suit);
-            temp->next = card->next;
-            //theCards->size--;
-            theCards->size--;
-            //this->theCards = this->theCards->next;
-            free(temp);
+            this->sum+=temp->face;
+            LL_add_cards(this->playerDeck, temp->face, temp->suit);
+            this->theCards->root = this->theCards->root->next;
+            //free(temp);
         }
 
         void printCards(){
@@ -166,9 +193,9 @@ class Player{
             }
             cout<<endl;
         }
-        card_deck* getDeck(){
-            return this->theCards;
-        }
+//        card_deck* getDeck(){
+//            return this->theCards;
+//        }
 //
 //        void setCards(card_deck * obj){
 //            clearDeck(theCards);
@@ -207,14 +234,13 @@ class Player{
         }
 };
 
-
-
 int main() {
     srand(time(nullptr));
 
     cout << "creating deck\n";
     card_deck *deck = allocateDeck();
     createDeck(deck);
+    shuffleDeck(deck->root);
     print_deck(deck->root);
     cout<<deck->size;
 
@@ -227,13 +253,13 @@ int main() {
     bool firstRun = true;
     while(true){
         if(!firstRun){
+            print_deck(deck->root);
             clearDeck(deck);
             deck = allocateDeck();
             createDeck(deck);
+            shuffleDeck(deck->root);
             user.resetPlayer(deck);
             comp.resetPlayer(deck);
-
-
         }
         cout<<"you have "<<user.getMoney()<<" coins"<<endl;
         cout<<"enter number to bet"<<endl;
@@ -248,19 +274,11 @@ int main() {
         user.dealCards(); //give 2 cards
         user.printCards();
 
-        //print_deck(deck->root);
-        //cout<<"size "<<deck->size<<endl;
         cout << "\n user current sum = " << user.getSum() << endl;
 
-
-        //comp.setCards(deck); //sync comp deck
         cout <<"\ngiving cards to computer...\n";
         comp.dealCards(); //give 2 cards
         comp.printCards();
-        //clearCard(deck->root); //clear previous deck
-        //deck = comp.getDeck(); // set deck from player deck
-        //print_deck(deck->root);
-        //cout<<"size "<<deck->size<<endl;
 
         cout << "\n computer current sum = " << comp.getSum() << endl;
 
@@ -273,11 +291,8 @@ int main() {
             }
             if(str=="h"||str=="H"){
                 cout <<"\ngiving user one card...\n";
-                //user.setCards(deck);
                 user.addOneCard();
                 user.printCards();
-                //deck = user.getDeck();
-                //print_deck(deck->root);
                 cout << "current sum = " << user.getSum() << endl;
                 if(user.getSum()>21){
                     cout<<"overdrew, you lose "<<bet<<" coins"<<endl;
@@ -324,9 +339,8 @@ int main() {
         cin>>str;
         if(str=="n"||str=="N"){
             cout<<"You have "<<user.getMoney()<<" coins"<<endl;
+            print_deck(deck->root);
             clearDeck(deck);
-            clearDeck(user.getDeck());
-            clearDeck(comp.getDeck());
             return 0;
         }
         else{
@@ -351,4 +365,6 @@ int main() {
     return 0;
 
 }
+
+
 
