@@ -221,7 +221,6 @@ int main() {
     Player comp(deck);
     string str;
     cout<<"welcome to blackjack"<<endl;
-    //TODO betting
     string bet;
     //main program loop
     bool firstRun = true;
