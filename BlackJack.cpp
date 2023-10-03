@@ -170,7 +170,7 @@ class Player{
                     cout << "|A"<<temp->suit << "       |\t";
                 }
                 else if (temp->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
-                    cout << "|"<<temp->face<<temp->suit << "     |\t";
+                    cout << "|"<<temp->face<<temp->suit << "      |\t";
                 }
                 else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
                     cout << "|"<<temp->face<<temp->suit << "       |\t";
@@ -178,7 +178,7 @@ class Player{
                 //After loop makes one cycle, make the list (temp) point to the next card
                 temp = temp->next;
             }
-
+            cout << endl;
         }
 
         void printCardsBottom(cards* temp2){
@@ -206,13 +206,16 @@ class Player{
                 //Make the third pointer (temp2) point to the next card
                 temp2 = temp2->next;
             }
+            cout << endl;
         }
 
         void printLines(){
             for (int j = 0; j < this->playerDeck->size; j++) {
                 cout << "|         |\t";
             }
+            cout << endl;
         }
+
         void printCards() {
             cards *temp = this->playerDeck->root;
             for (int j = 0; j < this->playerDeck->size; j++) {
@@ -220,11 +223,8 @@ class Player{
             }
             cout << endl;
             printCardsTop(temp);
-            cout << endl;
             printLines();
-            cout << endl;
             printLines();
-            cout << endl;
             temp = this->playerDeck->root;
             for (int j = 0; j < this->playerDeck->size; j++) {
                 cout << "|    " << temp->suit << "    |\t";
@@ -232,12 +232,9 @@ class Player{
             }
             cout << endl;
             printLines();
-            cout << endl;
             printLines();
-            cout << endl;
             temp = this->playerDeck->root;
             printCardsBottom(temp);
-            cout << endl;
         }
 
         int getSum() {
