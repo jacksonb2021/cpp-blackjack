@@ -169,11 +169,11 @@ class Player{
         card_deck* getDeck(){
             return this->theCards;
         }
-
-        void setCards(card_deck * obj){
-            clearDeck(theCards);
-            this->theCards = obj;
-        }
+//
+//        void setCards(card_deck * obj){
+//            clearDeck(theCards);
+//            this->theCards = obj;
+//        }
 
         int getSum(){
             return this->sum;
@@ -246,9 +246,7 @@ int main() {
         cout << "\n\ngiving cards to user...\n";
         user.dealCards(); //give 2 cards
         user.printCards();
-        //clearDeck(deck); //clear previous cards
-        //deck = user.getDeck(); // update main deck from player deck
-        //deck->size-=2; //decrease size by 2 for main deal
+
         print_deck(deck->root);
         cout<<"size "<<deck->size<<endl;
         cout << "\n user current sum = " << user.getSum() << endl;
@@ -277,7 +275,7 @@ int main() {
                 //user.setCards(deck);
                 user.addOneCard();
                 user.printCards();
-                deck = user.getDeck();
+                //deck = user.getDeck();
                 print_deck(deck->root);
                 cout << "\ncurrent sum = " << user.getSum() << endl;
                 if(user.getSum()>21){
@@ -325,6 +323,9 @@ int main() {
         cin>>str;
         if(str=="n"||str=="N"){
             cout<<"You have "<<user.getMoney()<<" coins"<<endl;
+            clearDeck(deck);
+            clearDeck(user.getDeck());
+            clearDeck(comp.getDeck());
             return 0;
         }
         else{
@@ -342,13 +343,6 @@ int main() {
 
 
 
-    cout <<"\ngiving comp one card...\n";
-    comp.setCards(deck);
-    comp.addOneCard();
-    comp.printCards();
-    deck = comp.getDeck();
-    print_deck(deck->root);
-    cout << "\ncurrent sum = " << comp.getSum() << endl;
 
     //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
     //Pending JJ: Improve printing, creating console game after everything is done, more?
