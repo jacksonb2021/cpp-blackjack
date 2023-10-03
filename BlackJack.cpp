@@ -155,31 +155,89 @@ class Player{
             this->theCards->root = this->theCards->root->next;
         }
 
-        void printCards(){
-            cards* temp = this->playerDeck->root;
-            while(temp != nullptr) {
-                if (temp->face == 13) {
-                    cout << "K";
-                    cout << temp->suit;
-                } else if (temp->face == 12) {
-                    cout << "Q";
-                    cout << temp->suit;
+        void printCardsTop(cards* temp){
+            for (int j = 0; j < this->playerDeck->size; j++) {
+                if (temp->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+                    cout << "|J"<<temp->suit << "       |\t";
                 }
-                else if (temp->face == 11) {
-                    cout << "J";
-                    cout << temp->suit;
+                else if (temp->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
+                    cout << "|Q"<<temp->suit << "       |\t";
                 }
-                else if (temp->face == 1) {
-                    cout << "A";
-                    cout << temp->suit;
+                else if (temp->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
+                    cout << "|K"<<temp->suit << "       |\t";
                 }
-                else{
-                    cout << temp->face;
-                    cout << temp->suit;
+                else if (temp->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
+                    cout << "|A"<<temp->suit << "       |\t";
                 }
+                else if (temp->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
+                    cout << "|"<<temp->face<<temp->suit << "     |\t";
+                }
+                else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
+                    cout << "|"<<temp->face<<temp->suit << "       |\t";
+                }
+                //After loop makes one cycle, make the list (temp) point to the next card
                 temp = temp->next;
             }
-            cout<<endl;
+
+        }
+
+        void printCardsBottom(cards* temp2){
+            //Open for loop for the last part of the cards with the face and suit
+            for (int j = 0; j < this->playerDeck->size; j++) {
+
+                if (temp2->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+                    printf("|_______J%c|\t", temp2->suit);
+                }
+                else if (temp2->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
+                    printf("|_______Q%c|\t", temp2->suit);
+                }
+                else if (temp2->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
+                    printf("|_______K%c|\t", temp2->suit);
+                }
+                else if (temp2->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
+                    printf("|_______A%c|\t", temp2->suit);
+                }
+                else if (temp2->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
+                    printf("|______%d%c|\t", temp2->face, temp2->suit);
+                }
+                else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
+                    printf("|_______%d%c|\t", temp2->face, temp2->suit);
+                }
+                //Make the third pointer (temp2) point to the next card
+                temp2 = temp2->next;
+            }
+        }
+
+        void printLines(){
+            for (int j = 0; j < this->playerDeck->size; j++) {
+                cout << "|         |\t";
+            }
+        }
+        void printCards() {
+            cards *temp = this->playerDeck->root;
+            for (int j = 0; j < this->playerDeck->size; j++) {
+                cout << " _________\t";
+            }
+            cout << endl;
+            printCardsTop(temp);
+            cout << endl;
+            printLines();
+            cout << endl;
+            printLines();
+            cout << endl;
+            temp = this->playerDeck->root;
+            for (int j = 0; j < this->playerDeck->size; j++) {
+                cout << "|    " << temp->suit << "    |\t";
+                temp = temp->next;
+            }
+            cout << endl;
+            printLines();
+            cout << endl;
+            printLines();
+            cout << endl;
+            temp = this->playerDeck->root;
+            printCardsBottom(temp);
+            cout << endl;
         }
 
         int getSum() {
