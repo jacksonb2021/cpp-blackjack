@@ -370,14 +370,14 @@ int main() {
         }
         cout<<"play again? (y/n)"<<endl;
         cin>>str;
-        if(str=="n"||str=="N"){
+        if(str=="y"||str=="Y"){
+            firstRun=false;
+            continue;
+        }
+        else{
             cout<<"***** Goodbye. *****"<<endl;
             clearDeck(deck);
             return 0;
-        }
-        else{
-            firstRun=false;
-            continue;
         }
     }
     //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
