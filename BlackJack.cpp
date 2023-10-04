@@ -2,23 +2,11 @@
 // Created by Jackson Burns and Jose Juan Velasquez on 9/30/2023.
 //
 
-//#include "Blackjack.h"
+#include "Blackjack.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <string>
-
-typedef struct cards {
-    char suit;
-    int face;
-    struct cards* next;
-} cards;
-
-//The structure in charge of the root node of a tree.
-typedef struct card_deck{
-    cards* root; //Will be the pointer pointing to the root node of a tree.
-    int size;
-}card_deck;
 using namespace std;
 
 //Open Structure
@@ -35,20 +23,20 @@ cards* cards_node_create(int face, char suit){
 }
 
 void clearCard(cards* card){
-        if(card== nullptr){
-            free(card);
-            return;
-        } else{
-            clearCard(card->next);
-        }
+    if(card== nullptr){
         free(card);
+        return;
+    } else{
+        clearCard(card->next);
+    }
+    free(card);
 }
 
 void clearDeck(card_deck* deck){
     if(deck->root != nullptr){
         clearCard(deck->root);
     }
-    delete deck;
+    free(deck);
 }
 
 void cards_add(cards* node, int face, char suit){
@@ -126,18 +114,30 @@ class Player{
     int money;
     bool firstDeal;
 
-    public:
-        explicit Player(card_deck* obj){
-            this->playerDeck = allocateDeck();
-            this->theCards = obj;
-            this->sum = 0;
-            this->money = 100;
-            this->firstDeal = true;
-        }
+public:
+    explicit Player(card_deck* obj){
+        this->playerDeck = allocateDeck();
+        this->theCards = obj;
+        this->sum = 0;
+        this->money = 100;
+        this->firstDeal = true;
+    }
 
-        //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
-        void dealCards() {
-            cards* temp = theCards->root;
+    //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
+    void dealCards() {
+        cards* temp = theCards->root;
+        for(int i = 0; i < 2; i++) {
+            if(temp->face > 10){
+                this->sum+=10;
+            } else{
+                this->sum+=temp->face;
+            }
+            LL_add_cards(this->playerDeck, temp->face, temp->suit);
+            temp = temp->next;
+        }
+        if(this->sum > 21 && this->firstDeal){
+            this->playerDeck->root = this->playerDeck->root->next->next;
+            temp = theCards->root;
             for(int i = 0; i < 2; i++) {
                 if(temp->face > 10){
                     this->sum+=10;
@@ -147,142 +147,145 @@ class Player{
                 LL_add_cards(this->playerDeck, temp->face, temp->suit);
                 temp = temp->next;
             }
-            if(this->sum > 21 && this->firstDeal){
-                this->playerDeck->root = this->playerDeck->root->next->next;
-                temp = theCards->root;
-                for(int i = 0; i < 2; i++) {
-                    this->sum+=temp->face;
-                    LL_add_cards(this->playerDeck, temp->face, temp->suit);
-                    temp = temp->next;
-                }
-            }
-            this->theCards->root = this->theCards->root->next->next;
-            this->firstDeal=false;
         }
+        temp = this->theCards->root;
+        this->theCards->root = this->theCards->root->next;
+        free(temp);
+        temp = this->theCards->root;
+        this->theCards->root = this->theCards->root->next;
+        free(temp);
+        this->firstDeal=false;
+    }
 
-        void addOneCard(){
-            cards *temp = this->theCards->root;
+    void addOneCard(){
+        cards *temp = this->theCards->root;
+        if(temp->face > 10){
+            this->sum+=10;
+        } else{
             this->sum+=temp->face;
-            LL_add_cards(this->playerDeck, temp->face, temp->suit);
-            this->theCards->root = this->theCards->root->next;
         }
+        LL_add_cards(this->playerDeck, temp->face, temp->suit);
+        temp = this->theCards->root;
+        this->theCards->root = this->theCards->root->next;
+        free(temp);
+    }
 
-        void printCardsTop(cards* temp){
-            for (int j = 0; j < this->playerDeck->size; j++) {
-                if (temp->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
-                    cout << "|J"<<temp->suit << "       |\t";
-                }
-                else if (temp->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
-                    cout << "|Q"<<temp->suit << "       |\t";
-                }
-                else if (temp->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
-                    cout << "|K"<<temp->suit << "       |\t";
-                }
-                else if (temp->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
-                    cout << "|A"<<temp->suit << "       |\t";
-                }
-                else if (temp->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
-                    cout << "|"<<temp->face<<temp->suit << "      |\t";
-                }
-                else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
-                    cout << "|"<<temp->face<<temp->suit << "       |\t";
-                }
-                //After loop makes one cycle, make the list (temp) point to the next card
-                temp = temp->next;
+    void printCardsTop(cards* temp){
+        for (int j = 0; j < this->playerDeck->size; j++) {
+            if (temp->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+                cout << "|J"<<temp->suit << "       |\t";
             }
-            cout << endl;
-        }
-
-        void printCardsBottom(cards* temp2){
-            //Open for loop for the last part of the cards with the face and suit
-            for (int j = 0; j < this->playerDeck->size; j++) {
-
-                if (temp2->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
-                    printf("|_______J%c|\t", temp2->suit);
-                }
-                else if (temp2->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
-                    printf("|_______Q%c|\t", temp2->suit);
-                }
-                else if (temp2->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
-                    printf("|_______K%c|\t", temp2->suit);
-                }
-                else if (temp2->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
-                    printf("|_______A%c|\t", temp2->suit);
-                }
-                else if (temp2->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
-                    printf("|______%d%c|\t", temp2->face, temp2->suit);
-                }
-                else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
-                    printf("|_______%d%c|\t", temp2->face, temp2->suit);
-                }
-                //Make the third pointer (temp2) point to the next card
-                temp2 = temp2->next;
+            else if (temp->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
+                cout << "|Q"<<temp->suit << "       |\t";
             }
-            cout << endl;
-        }
-
-        void printLines(){
-            for (int j = 0; j < this->playerDeck->size; j++) {
-                cout << "|         |\t";
+            else if (temp->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
+                cout << "|K"<<temp->suit << "       |\t";
             }
-            cout << endl;
-        }
-
-        void printCards() {
-            cards *temp = this->playerDeck->root;
-            for (int j = 0; j < this->playerDeck->size; j++) {
-                cout << " _________\t";
+            else if (temp->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
+                cout << "|A"<<temp->suit << "       |\t";
             }
-            cout << endl;
-            printCardsTop(temp);
-            printLines();
-            printLines();
-            temp = this->playerDeck->root;
-            for (int j = 0; j < this->playerDeck->size; j++) {
-                cout << "|    " << temp->suit << "    |\t";
-                temp = temp->next;
+            else if (temp->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
+                cout << "|"<<temp->face<<temp->suit << "      |\t";
             }
-            cout << endl;
-            printLines();
-            printLines();
-            temp = this->playerDeck->root;
-            printCardsBottom(temp);
-        }
-
-        int getSum() {
-            return this->sum;
-        }
-
-        int getMoney() {
-            return this->money;
-        }
-
-        //bets money. if there is enough money, the bet will be returned.
-        // if not enough money, it will return -1
-        int bet(int val){
-            if(this->money<val){
-                return -1;
+            else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
+                cout << "|"<<temp->face<<temp->suit << "       |\t";
             }
-            else{
-                this->money-=val;
-                return val;
+            //After loop makes one cycle, make the list (temp) point to the next card
+            temp = temp->next;
+        }
+        cout << endl;
+    }
+
+    void printCardsBottom(cards* temp2){
+        //Open for loop for the last part of the cards with the face and suit
+        for (int j = 0; j < this->playerDeck->size; j++) {
+
+            if (temp2->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+                printf("|_______J%c|\t", temp2->suit);
             }
+            else if (temp2->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
+                printf("|_______Q%c|\t", temp2->suit);
+            }
+            else if (temp2->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
+                printf("|_______K%c|\t", temp2->suit);
+            }
+            else if (temp2->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
+                printf("|_______A%c|\t", temp2->suit);
+            }
+            else if (temp2->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
+                printf("|______%d%c|\t", temp2->face, temp2->suit);
+            }
+            else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
+                printf("|_______%d%c|\t", temp2->face, temp2->suit);
+            }
+            //Make the third pointer (temp2) point to the next card
+            temp2 = temp2->next;
         }
+        cout << endl;
+    }
 
-        void addMoney(int val){
-            this->money+=val;
+    void printLines(){
+        for (int j = 0; j < this->playerDeck->size; j++) {
+            cout << "|         |\t";
         }
+        cout << endl;
+    }
 
-        void resetPlayer(card_deck * deck){
-            clearDeck(playerDeck);
-            playerDeck = allocateDeck();
-            this->sum = 0;
-            this->theCards = deck;
+    void printCards() {
+        cards *temp = this->playerDeck->root;
+        for (int j = 0; j < this->playerDeck->size; j++) {
+            cout << " _________\t";
         }
+        cout << endl;
+        printCardsTop(temp);
+        printLines();
+        printLines();
+        temp = this->playerDeck->root;
+        for (int j = 0; j < this->playerDeck->size; j++) {
+            cout << "|    " << temp->suit << "    |\t";
+            temp = temp->next;
+        }
+        cout << endl;
+        printLines();
+        printLines();
+        temp = this->playerDeck->root;
+        printCardsBottom(temp);
+    }
 
-        void clearPlayer(){
-            clearDeck(playerDeck);
+    int getSum() {
+        return this->sum;
+    }
+
+    int getMoney() {
+        return this->money;
+    }
+
+    //bets money. if there is enough money, the bet will be returned.
+    // if not enough money, it will return -1
+    int bet(int val){
+        if(this->money<val){
+            return -1;
         }
+        else{
+            this->money-=val;
+            return val;
+        }
+    }
+
+    void addMoney(int val){
+        this->money+=val;
+    }
+
+    void resetPlayer(card_deck * deck){
+        clearDeck(playerDeck);
+        this->playerDeck = allocateDeck();
+        this->sum = 0;
+        this->theCards = deck;
+    }
+
+    void clearPlayer(card_deck *pDeck) {
+        clearDeck(playerDeck);
+    }
 };
 
 int main() {
@@ -386,23 +389,19 @@ int main() {
         }
         cout<<"play again? (y/n)"<<endl;
         cin>>str;
-        if(str=="y"||str=="Y"){
-            firstRun=false;
-            continue;
+        if(str=="n"||str=="N"){
+            cout<<"***** Goodbye. *****"<<endl;
+            clearDeck(deck);
+            user.clearPlayer(deck);
+            comp.clearPlayer(deck);
+            return 0;
         }
         else{
-            cout<<"***** Goodbye. *****"<<endl;
-            cout<<"***** You ended with "<< user.getMoney()<<" coins"<<endl;
-            clearDeck(deck);
-            user.clearPlayer();
-            comp.clearPlayer();
-            return 0;
+            firstRun=false;
+            continue;
         }
     }
     //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
     //Pending JJ: Improve printing, creating console game after everything is done, more?
 
 }
-
-
-
