@@ -201,22 +201,22 @@ public:
         for (int j = 0; j < this->playerDeck->size; j++) {
 
             if (temp2->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
-                printf("|_______J%c|\t", temp2->suit);
+                cout<< "|_______J"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
-                printf("|_______Q%c|\t", temp2->suit);
+                cout<<"|_______Q"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
-                printf("|_______K%c|\t", temp2->suit);
+                cout<<"|_______K"<< temp2->suit<<"|\t";;
             }
             else if (temp2->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
-                printf("|_______A%c|\t", temp2->suit);
+                cout<<"|_______A"<< temp2->suit<<"|\t";;
             }
             else if (temp2->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
-                printf("|______%d%c|\t", temp2->face, temp2->suit);
+                cout<<"|_______" <<temp2->face<<temp2->suit<<"|\t";;
             }
             else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
-                printf("|_______%d%c|\t", temp2->face, temp2->suit);
+                cout<<"|_______"<< temp2->face<< temp2->suit<<"|\t";;
             }
             //Make the third pointer (temp2) point to the next card
             temp2 = temp2->next;
