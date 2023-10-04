@@ -2,11 +2,23 @@
 // Created by Jackson Burns and Jose Juan Velasquez on 9/30/2023.
 //
 
-#include "Blackjack.h"
+//#include "Blackjack.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <string>
+
+typedef struct cards {
+    char suit;
+    int face;
+    struct cards* next;
+} cards;
+
+//The structure in charge of the root node of a tree.
+typedef struct card_deck{
+    cards* root; //Will be the pointer pointing to the root node of a tree.
+    int size;
+}card_deck;
 using namespace std;
 
 //Open Structure

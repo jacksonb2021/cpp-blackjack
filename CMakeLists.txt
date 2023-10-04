@@ -7,5 +7,4 @@ include_directories(.)
 
 add_executable(c_but_better
         BlackJack.cpp
-        BlackJack.h
 )
