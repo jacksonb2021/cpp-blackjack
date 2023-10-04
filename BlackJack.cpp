@@ -279,6 +279,10 @@ class Player{
             this->sum = 0;
             this->theCards = deck;
         }
+
+        void clearPlayer(){
+            clearDeck(playerDeck);
+        }
 };
 
 int main() {
@@ -388,7 +392,10 @@ int main() {
         }
         else{
             cout<<"***** Goodbye. *****"<<endl;
+            cout<<"***** You ended with "<< user.getMoney()<<" coins"<<endl;
             clearDeck(deck);
+            user.clearPlayer();
+            comp.clearPlayer();
             return 0;
         }
     }
