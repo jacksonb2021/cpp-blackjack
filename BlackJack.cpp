@@ -185,7 +185,8 @@ public:
 
     void printCardsTop(cards* temp){
         for (int j = 0; j < this->playerDeck->size; j++) {
-            if (temp->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+            if (temp->face == 11) {//If the face value is an 0eleven, print the Jack symbol and its
+                // corresponding suit
                 cout << "|J"<<temp->suit << "       |\t";
             }
             else if (temp->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
@@ -200,7 +201,8 @@ public:
             else if (temp->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
                 cout << "|"<<temp->face<<temp->suit << "      |\t";
             }
-            else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
+            else {//If the face value is between two and nine, print the numbers with their adjusted
+                // spaces and its corresponding suit
                 cout << "|"<<temp->face<<temp->suit << "       |\t";
             }
             //After loop makes one cycle, make the list (temp) point to the next card
@@ -296,7 +298,7 @@ public:
         this->theCards = deck;
     }
 
-    void clearPlayer(card_deck *pDeck) {
+    void clearPlayer() {
         clearDeck(playerDeck);
     }
 };
@@ -409,8 +411,8 @@ int main() {
         if(str=="n"||str=="N"){
             cout<<"***** Goodbye. *****"<<endl;
             clearDeck(deck);
-            user.clearPlayer(deck);
-            comp.clearPlayer(deck);
+            user.clearPlayer();
+            comp.clearPlayer();
             return 0;
         }
         else{
