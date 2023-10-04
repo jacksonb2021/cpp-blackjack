@@ -1,8 +1,6 @@
 //
 // Created by Jackson Burns and Jose Juan Velasquez on 9/30/2023.
 //
-
-
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -185,7 +183,7 @@ public:
 
     void printCardsTop(cards* temp){
         for (int j = 0; j < this->playerDeck->size; j++) {
-            if (temp->face == 11) {//If the face value is an 0eleven, print the Jack symbol and its
+            if (temp->face == 11) {//If the face value is a 0eleven, print the Jack symbol and its
                 // corresponding suit
                 cout << "|J"<<temp->suit << "       |\t";
             }
@@ -215,23 +213,23 @@ public:
         //Open for loop for the last part of the cards with the face and suit
         for (int j = 0; j < this->playerDeck->size; j++) {
 
-            if (temp2->face == 11) {//If the face value is a eleven, print the Jack symbol and its corresponding suit
+            if (temp2->face == 11) {//If the face value is an eleven, print the Jack symbol and its corresponding suit
                 cout<< "|_______J"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 12) {//If the face value is a twelve, print the Queen symbol and its corresponding suit
                 cout<<"|_______Q"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 13) {//If the face value is a thirteen, print the King symbol and its corresponding suit
-                cout<<"|_______K"<< temp2->suit<<"|\t";;
+                cout<<"|_______K"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 1) {//If the face value is a one, print the Ace symbol and its corresponding suit
-                cout<<"|_______A"<< temp2->suit<<"|\t";;
+                cout<<"|_______A"<< temp2->suit<<"|\t";
             }
             else if (temp2->face == 10) {//If the face value is a ten, print the number ten with its adjusted spaces and its corresponding suit
-                cout<<"|_______" <<temp2->face<<temp2->suit<<"|\t";;
+                cout<<"|______" <<temp2->face<<temp2->suit<<"|\t";
             }
-            else {//If the face value is between two to nine, print the numbers with their adjusted spaces and its corresponding suit
-                cout<<"|_______"<< temp2->face<< temp2->suit<<"|\t";;
+            else {//If the face value is between two and nine, print the numbers with their adjusted spaces and its corresponding suit
+                cout<<"|_______"<< temp2->face<< temp2->suit<<"|\t";
             }
             //Make the third pointer (temp2) point to the next card
             temp2 = temp2->next;
@@ -267,11 +265,11 @@ public:
         printCardsBottom(temp);
     }
 
-    int getSum() {
+    int getSum() const {
         return this->sum;
     }
 
-    int getMoney() {
+    int getMoney() const {
         return this->money;
     }
 
