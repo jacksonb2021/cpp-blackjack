@@ -2,12 +2,25 @@
 // Created by Jackson Burns and Jose Juan Velasquez on 9/30/2023.
 //
 
-#include "Blackjack.h"
+
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <string>
 using namespace std;
+
+typedef struct cards {
+    char suit;
+    int face;
+    struct cards* next;
+} cards;
+
+//The structure in charge of the root node of a tree.
+typedef struct card_deck{
+    cards* root; //Will be the pointer pointing to the root node of a tree.
+    int size;
+}card_deck;
+
 
 //Open Structure
 card_deck* allocateDeck(){
@@ -389,6 +402,10 @@ int main() {
         }
         cout<<"play again? (y/n)"<<endl;
         cin>>str;
+        while(str!="n"&&str!="N"&&str!="y"&&str!="Y"){
+            cout<<"You entered an invalid option";
+            cin>>str;
+        }
         if(str=="n"||str=="N"){
             cout<<"***** Goodbye. *****"<<endl;
             clearDeck(deck);
