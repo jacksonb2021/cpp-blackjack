@@ -7,6 +7,7 @@
 #include <string>
 using namespace std;
 
+//The structure that will hold the card nodes
 typedef struct cards {
     char suit;
     int face;
@@ -20,11 +21,15 @@ typedef struct card_deck{
 }card_deck;
 
 
-//Open Structure
+//Function will allocate memory for the root of the Linked List containing the nodes
+//It will return a pointer to the root of the Linked List
 card_deck* allocateDeck(){
     auto* list = (card_deck*)calloc(1, sizeof(card_deck));
     return list;
 }
+
+//Function will allocate memory for each individual node representing one card of the standard 52 card deck
+//Will return the allocated node containing the corresponding number/symbol and suit
 cards* cards_node_create(int face, char suit){
     auto* node = (cards*)calloc(1,sizeof(cards));
     node->suit = suit;
@@ -33,6 +38,7 @@ cards* cards_node_create(int face, char suit){
     return node;
 }
 
+//Function will de-allocate memory of each node recursively once the round or game ends
 void clearCard(cards* card){
     if(card== nullptr){
         free(card);
@@ -43,6 +49,8 @@ void clearCard(cards* card){
     free(card);
 }
 
+//Function will free the allocated memory from the root pointing to the Linked List
+//Will call clearCard function to recurse through all the nodes and free them one by one
 void clearDeck(card_deck* deck){
     if(deck->root != nullptr){
         clearCard(deck->root);
@@ -50,6 +58,7 @@ void clearDeck(card_deck* deck){
     free(deck);
 }
 
+//Function will add the cards into the linked list recursively
 void cards_add(cards* node, int face, char suit){
     if(node->next != nullptr){
         cards_add(node->next, face, suit);
@@ -59,6 +68,8 @@ void cards_add(cards* node, int face, char suit){
     }
 }
 
+//Function will create a root node if the list is empty or call
+//cards_add to add the card nodes into the linked list.
 void LL_add_cards(card_deck * tree, int face, char suit){
     if(tree->root == nullptr){
         tree->root = cards_node_create(face,suit);
@@ -69,6 +80,7 @@ void LL_add_cards(card_deck * tree, int face, char suit){
     }
 }
 
+//TESTING function used to verify that all cards are made correctly
 void print_deck(cards* node){
     if(node->next != nullptr){
         cout << node->face << node->suit << " ";
@@ -78,13 +90,16 @@ void print_deck(cards* node){
     }
 }
 
+//Function will call LL_add_cards with parameters being passed within this for loop
 void createDeck(card_deck* deck){
-    for (int i = 3; i <= 6; i++) {
-        for (int j = 1; j <= 13; j++) {
-            LL_add_cards(deck ,j,i);
+    for (int suit = 3; suit <= 6; suit++) {
+        for (int face = 1; face <= 13; face++) {
+            LL_add_cards(deck ,face,suit);
         }
     }
 }
+
+//Function will swap cards based on what the shuffle function
 void SwapCards(cards *cardOne, cards *cardTwo) {
     cards temp;
     temp.suit = cardOne->suit;
@@ -96,28 +111,36 @@ void SwapCards(cards *cardOne, cards *cardTwo) {
     cardTwo->face = temp.face;
 }
 
+//This function will shuffle the deck of cards in a random order each time the game starts
+//or if a new round starts.
 void shuffleDeck(cards *deck) {
+    //Create pointers to go through the deck of cards
     cards* card1, * card2;
     srand( time(nullptr));
 
+    //Will shuffle all the 52 cards
     for (int i = 0; i < 52; i++){
+
+        //Will find first card to shuffle
         int randCard1 = rand() % 52;
         card1 = deck;
-
         for (int j = 0; j < randCard1; j++) {
             card1 = card1->next;
         }
 
+        //Will find second card to shuffle
         int randCard2 = rand() % 52;
         card2 = deck;
-
         for (int k = 0; k < randCard2; k++) {
             card2 = card2->next;
         }
+
+        //Once the cards are randomly selected, swap them
         SwapCards(card1, card2);
     }
 }
 
+//Class will hold the current player objects
 class Player{
     card_deck* playerDeck;
     card_deck* theCards;
@@ -126,6 +149,8 @@ class Player{
     bool firstDeal;
 
 public:
+    //Constructor method will populate and receive the deck of cards and
+    //add that to this class so that the cards are in sync with the players.
     explicit Player(card_deck* obj){
         this->playerDeck = allocateDeck();
         this->theCards = obj;
@@ -134,10 +159,13 @@ public:
         this->firstDeal = true;
     }
 
-    //Open Hand function that will transfer 2 cards from the original deck's tail into another linked list
+    //Method will deal two initial cards to the players with certain conditions
     void dealCards() {
         cards* temp = theCards->root;
+
+        //Deal two cards ti tge player
         for(int i = 0; i < 2; i++) {
+            //If face is either a King, Queen or Jack, only add +10 to the sum
             if(temp->face > 10){
                 this->sum+=10;
             } else{
@@ -146,6 +174,8 @@ public:
             LL_add_cards(this->playerDeck, temp->face, temp->suit);
             temp = temp->next;
         }
+
+        //If the sum of the two cards is greater than 21, dispose of old hand and give user new cards
         if(this->sum > 21 && this->firstDeal){
             this->playerDeck->root = this->playerDeck->root->next->next;
             temp = theCards->root;
@@ -159,15 +189,20 @@ public:
                 temp = temp->next;
             }
         }
+        //Have temp point to the current head of the linked list
         temp = this->theCards->root;
+        //Move the head pointer to its next element
         this->theCards->root = this->theCards->root->next;
+        //Free from the deck the card that was dealt
         free(temp);
+
         temp = this->theCards->root;
         this->theCards->root = this->theCards->root->next;
         free(temp);
         this->firstDeal=false;
     }
 
+    //Method will deal one card to either player each time it is called
     void addOneCard(){
         cards *temp = this->theCards->root;
         if(temp->face > 10){
@@ -181,6 +216,7 @@ public:
         free(temp);
     }
 
+    //A set of functions that will print out the card layouts for better HCI
     void printCardsTop(cards* temp){
         for (int j = 0; j < this->playerDeck->size; j++) {
             if (temp->face == 11) {//If the face value is a 0eleven, print the Jack symbol and its
@@ -237,6 +273,7 @@ public:
         cout << endl;
     }
 
+    //Method will print the body of the card
     void printLines(){
         for (int j = 0; j < this->playerDeck->size; j++) {
             cout << "|         |\t";
@@ -244,6 +281,7 @@ public:
         cout << endl;
     }
 
+    //Main printer method that will print out the cards
     void printCards() {
         cards *temp = this->playerDeck->root;
         for (int j = 0; j < this->playerDeck->size; j++) {
@@ -289,6 +327,8 @@ public:
         this->money+=val;
     }
 
+    //After each round ends, this method will de-allocate the cards from the deck
+    //and allocate new ones for the next round
     void resetPlayer(card_deck * deck){
         clearDeck(playerDeck);
         this->playerDeck = allocateDeck();
@@ -296,6 +336,7 @@ public:
         this->theCards = deck;
     }
 
+    //Method will de-allocate players after the user decides to end the game
     void clearPlayer() {
         clearDeck(playerDeck);
     }
@@ -303,10 +344,14 @@ public:
 
 int main() {
     srand(time(nullptr));
+
+    //Create deck of cards and shuffle them
     card_deck *deck = allocateDeck();
     createDeck(deck);
     shuffleDeck(deck->root);
+    //print_deck(deck->root);
 
+    //Create user and computer player objects
     Player user(deck);
     Player comp(deck);
     string str;
@@ -375,7 +420,6 @@ int main() {
                     comp.addOneCard();
                 }
                 //win condition
-
                 if(comp.getSum()>21||comp.getSum()<user.getSum()){
                     cout << "Computer's hand:\n";
                     comp.printCards();
@@ -418,7 +462,5 @@ int main() {
             continue;
         }
     }
-    //Pending Jackson: Freeing memory after a game ends, adding coin system, win/lose conditions (must count A as either 1 or 11 depending on current sum), shuffle cards
-    //Pending JJ: Improve printing, creating console game after everything is done, more?
 
 }
