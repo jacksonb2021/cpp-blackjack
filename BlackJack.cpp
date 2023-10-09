@@ -400,6 +400,10 @@ int main() {
                 cout << "user current sum = " << user.getSum() << endl;
                 if(user.getSum()>21){
                     cout<<"*** overdrew, you lose "<<bet<<" coins ***"<<endl;
+                    if(user.getMoney() == 0){
+                        cout<<"*** YOU LOST ALL YOUR COINS. GOODBYE ***"<<endl;
+                        return 0;
+                    }
                     break;
                 }else if (user.getSum()==21){ //exactly 21
                     cout << "Computer's hand:\n";
@@ -439,6 +443,10 @@ int main() {
                     comp.printCards();
                     cout << "computer's final sum = " << comp.getSum() << endl;
                     cout<<"*** YOU LOST "<<bet<<" COINS ***"<<endl;
+                    if(user.getMoney() == 0){
+                        cout<<"*** YOU LOST ALL YOUR COINS. GOODBYE ***"<<endl;
+                        return 0;
+                    }
                 }
                 break;
             }

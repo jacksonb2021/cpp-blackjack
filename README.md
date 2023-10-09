@@ -21,6 +21,7 @@ or receive one more random card.
 the highest sum wins the amount of coins they bet at the beginning and will be asked to play again.
 -If user says yes, the game will start another round, reshuffling the cards and dealing them to the players
 -If user says no, the game will end.
+-If user loses all their coins, the game automatically ends and closes the program.
 
 How testing was done:
 -We had a method to print out all the cards from the deck to verify if each card was done correctly.
