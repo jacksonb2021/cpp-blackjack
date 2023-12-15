@@ -1,4 +1,4 @@
-# c-but-better
+# C++ BlackJack
 
 ### Jackson Burns, Jose Juan Velasquez
 
